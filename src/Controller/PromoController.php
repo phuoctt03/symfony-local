@@ -41,6 +41,7 @@ class PromoController extends AbstractController
         if ($data->get('amount') < 0) {
             return $this->json(['message' => 'Amount không hợp lệ'], Response::HTTP_BAD_REQUEST);
         }
+        $conditions = $data->get('conditions');
         if ($conditions !== 'Public' && $conditions !== 'Silver' && $conditions !== 'Gold') {
             return $this->json(['message' => 'Conditions không hợp lệ'], Response::HTTP_BAD_REQUEST);
         }
@@ -51,7 +52,7 @@ class PromoController extends AbstractController
             discount: $data->get('discount'),
             expiredDate: $expiredDate,
             amount: $data->get('amount'),
-            conditions: $data->get('conditions')
+            conditions: $conditions
         );
         $promo = $this->promoService->createPromo($dto);
 
