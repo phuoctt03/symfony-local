@@ -62,7 +62,7 @@ class PromoController extends AbstractController
     #[Route('/promos/bulk', methods: ['GET'])]
     public function bulkRead(Request $request): JsonResponse
     {
-        $admin = $this->checkAdminRole($request);
+        $this->checkAdminRole($request);
         list($token, $check) = $this->checkAuthor($request);
         if (!$check) {
             $promos = $this->promoService->getAllPromosForUser();

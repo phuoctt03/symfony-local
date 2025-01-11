@@ -57,7 +57,7 @@ DATABASE_URL="mysql://root:@127.0.0.1:3306/symfony"
 1. **Tối ưu hóa:**  
 
    ```bash
-   composer optimize
+   composer dump-autoload --optimize
    ```
 
 2. **Khởi chạy dự án:**  
