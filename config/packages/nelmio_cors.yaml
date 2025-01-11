@@ -1,0 +1,12 @@
+# config/packages/nelmio_cors.yaml
+nelmio_cors:
+    defaults:
+        allow_origin: ['*']  # Cho phép từ frontend
+        allow_methods: ['POST', 'GET', 'OPTIONS', 'PATCH', 'DELETE']  # Các phương thức cho phép
+        allow_headers: ['Content-Type', 'Authorization', 'X-Requested-With']  # Các header cho phép\
+        expose_headers: ['link']
+        max_age: 3600
+    paths:
+        '^/':  # Áp dụng cho tất cả các đường dẫn API
+            origin_regex: true
+            allow_origin: ['*']
