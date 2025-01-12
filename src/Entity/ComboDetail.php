@@ -63,12 +63,12 @@ class ComboDetail
 
     public function getCheckInDate(): ?\DateTimeInterface
     {
-        return $this->checkInDate->format('Y-m-d H:i:s');
+        return $this->checkInDate;
     }
 
     public function getCheckOutDate(): ?\DateTimeInterface
     {
-        return $this->checkOutDate->format('Y-m-d H:i:s');
+        return $this->checkOutDate;
     }
     // Setter methods
     public function setCombo(Combo $combo): void

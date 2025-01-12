@@ -22,11 +22,11 @@ class UserController extends AbstractController
     public function createUser(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        $check = $this->findByUsername($data['username']);
+        $check = $this->userService->findByUsername($data['username']);
         if ($check) {
             return $this->json(['message' => 'Username đã tồn tại'], Response::HTTP_BAD_REQUEST);
         }
-        $check1 = $this->findByEmail($data['email']);
+        $check1 = $this->userService->findByEmail($data['email']);
         if ($check1) {
             return $this->json(['message' => 'Email đã tồn tại'], Response::HTTP_BAD_REQUEST);
         }
@@ -111,33 +111,30 @@ class UserController extends AbstractController
         }
         $data = json_decode($request->getContent(), true);
         $user = $this->userService->getUserById($id);
-        $role = (isset($data['role']) && $data['role'] !== '' ) ? UserRole::from($data['role']) : $user->getRole();
+        $role = (isset($data['role']) && $data['role'] !== '' ) ? $data['role'] : $user->getRole()->value;
         $phone = (isset($data['phone']) && $data['phone'] !== '' ) ? $data['phone'] : $user->getPhone();
         $address = (isset($data['address']) && $data['address'] !== '' ) ? $data['address'] : $user->getAddress();
         $username = (isset($data['username']) && $data['username'] !== '' ) ? $data['username'] : $user->getUsername();
         $password = isset($data['password']) ? $data['password'] : $user->getPassword();
         $email = (isset($data['email']) && $data['email'] !== '' ) ? $data['email'] : $user->getEmail();
-        $newUsername = $this->findByUsername($username);
+        $newUsername = $this->userService->findByUsername($username);
         if ($newUsername && $newUsername->getId() != $id) {
             return $this->json(['message' => 'Username đã tồn tại'], Response::HTTP_BAD_REQUEST);
         }
-        $newEmail = $this->findByEmail($email);
+        $newEmail = $this->userService->findByEmail($email);
         if ($newEmail && $newEmail->getId() != $id) {
             return $this->json(['message' => 'Email đã tồn tại'], Response::HTTP_BAD_REQUEST);
         }
-        if (!$isAdmin) {
-            $role = $user->getRole();
-        }
-        if ($role !== 'User' && $role !== 'Admin' && $role !== 'Silver' && $role !== 'Gold') {
-            return $this->json(['message' => 'Role không hợp lệ'], Response::HTTP_BAD_REQUEST);
-        }
+        // if (!$isAdmin) {
+        //     $role = $user->getRole();
+        // }
         $dto = new UpdateUserDTO(
             username: $username,
             password: $password,
             email: $email,
             phone: $phone,
             address: $address,
-            role: $role->value
+            role: $role
         );
 
         $user = $this->userService->updateUser($id, $dto);

@@ -44,8 +44,8 @@ class ComboDetailController extends AbstractController
                 'flight' => $comboDetail ? (new FlightResponseDTO($comboDetail->getFlight()))->toArray() : null,
                 'hotel' => $comboDetail ? (new HotelResponseDTO($comboDetail->getHotel()))->toArray() : null,
                 'activity' => $comboDetail ? (new ActivityResponseDTO($comboDetail->getActivity()))->toArray() : null,
-                'checkInDate' => $comboDetail->getCheckInDate(),
-                'checkOutDate' => $comboDetail->getCheckOutDate(),
+                'checkInDate' => $comboDetail->getCheckInDate()->format('Y-m-d H:i:s'),
+                'checkOutDate' => $comboDetail->getCheckOutDate()->format('Y-m-d H:i:s'),
             ];
         }
 
@@ -66,8 +66,8 @@ class ComboDetailController extends AbstractController
                 'flight' => $comboDetail ? (new FlightResponseDTO($comboDetail->getFlight()))->toArray() : null,
                 'hotel' => $comboDetail ? (new HotelResponseDTO($comboDetail->getHotel()))->toArray() : null,
                 'activity' => $comboDetail ? (new ActivityResponseDTO($comboDetail->getActivity()))->toArray() : null,
-                'checkInDate' => $comboDetail->getCheckInDate(),
-                'checkOutDate' => $comboDetail->getCheckOutDate(),
+                'checkInDate' => $comboDetail->getCheckInDate()->format('Y-m-d H:i:s'),
+                'checkOutDate' => $comboDetail->getCheckOutDate()->format('Y-m-d H:i:s'),
             ]);
     }
     #[Route(self::COMBO_DETAIL_ROUTE, methods: ['PATCH'])]

@@ -24,7 +24,7 @@ class BookingDetailService
         $bookingDetail->setCombo($bookingDetailDTO->getComboId());
         $bookingDetail->setQuantity($bookingDetailDTO->getQuantity());
         $bookingDetail->setCheckInDate($bookingDetailDTO->getCheckInDate());
-        $bookingDetail->setCheckOutDate($bookingDetailDTO->getCheckOutDate());
+        $bookingDetail->setCheckOutDate($bookingDetailDTO->getCheckOutDate());       
 
         $this->entityManager->persist($bookingDetail);
         $this->entityManager->flush();

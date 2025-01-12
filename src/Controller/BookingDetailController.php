@@ -20,13 +20,22 @@ class BookingDetailController extends AbstractController
     #[Route('/booking-details/bulk', methods: ['GET'])]
     public function bulkRead(Request $request): JsonResponse
     {
-        $check = $this->checkAdminRole($request);
+        list($token, $check) = $this->checkAuthor($request);
         if (!$check) {
-            return $this->json(['message' => 'Không đủ quyền'], Response::HTTP_UNAUTHORIZED);
+            return $this->json(['message' => 'Bạn cần đăng nhập trước'], Response::HTTP_UNAUTHORIZED);
         }
+        $admin = $this->checkAdminRole($request);
+        $userId = $this->jWTService->getIdFromToken($token);
         $bookingDetails = $this->bookingDetailService->getAllBookingDetails();
         $response = [];
-
+        if (!$admin) {
+            foreach ($bookingDetails as $bookingDetail) {
+                if ($userId === $bookingDetail->getBooking()->getUser()->getId()) {
+                    $response[] = (new BookingDetailResponseDTO($bookingDetail))->toArray();
+                }
+            }
+            return $this->json($response);
+        }
         foreach ($bookingDetails as $bookingDetail) {
             $response[] = (new BookingDetailResponseDTO($bookingDetail))->toArray();
         }
@@ -36,12 +45,16 @@ class BookingDetailController extends AbstractController
     #[Route(self::BOOKING_DETAIL_ROUTE, methods: ['GET'])]
     public function read(int $id, Request $request): JsonResponse
     {
+        list($token, $check) = $this->checkAuthor($request);
+        if (!$check) {
+            return $this->json(['message' => 'Bạn cần đăng nhập trước'], Response::HTTP_UNAUTHORIZED);
+        }
+        $userId = $this->jWTService->getIdFromToken($token);
         $admin = $this->checkAdminRole($request);
-        if (!$admin) {
+        $bookingDetail = $this->bookingDetailService->getBookingDetailById($id);
+        if (!$admin && $userId !== $bookingDetail->getBooking()->getUser()->getId()) {
             return $this->json(['message' => 'Không đủ quyền'], Response::HTTP_UNAUTHORIZED);
         }
-        $bookingDetail = $this->bookingDetailService->getBookingDetailById($id);
-
         if (!$bookingDetail) {
             return $this->json(['message' => 'Booking Detail not found'], Response::HTTP_NOT_FOUND);
         }
@@ -85,20 +98,28 @@ class BookingDetailController extends AbstractController
 
     private function checkAdminRole(Request $request)
     {
-       // Lấy header Authorization
-       $authorizationHeader = $request->headers->get('Authorization');
-       $check = true;
-       // Kiểm tra nếu không có header hoặc header không đúng định dạng
-       if (!$authorizationHeader || !preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
-           $check = false;
-       }
        // Tách token từ header
-       $token = $matches[1];
+       list($token, $check) = $this->checkAuthor($request);
 
        // Kiểm tra role
        if (!$this->jWTService->isAdmin($token)) {
-           $check = false;
+            $check = false;
        }
        return $check;
+    }
+    
+
+    private function checkAuthor(Request $request){
+        $authorizationHeader = $request->headers->get('Authorization');
+        $check = true;
+       // Kiểm tra nếu không có header hoặc header không đúng định dạng
+       if (!$authorizationHeader || !preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
+            $check = false;
+       }
+       if (!$check) {
+            $token = null;
+            return [$token, $check];
+        }
+       return [$matches[1], $check];
     }
 }

@@ -20,7 +20,7 @@ class FileUploader
 
         // Di chuyển file vào thư mục đích
         $file->move($this->targetDirectory, $newFilename);
-        $url = 'https://symfony-9z0y.onrender.com/images/' . $newFilename;
+        $url = 'http://127.0.0.1:3000/images/' . $newFilename;
         // Trả về tên file
         return $url;
     }
